@@ -60,6 +60,22 @@ app.post('/api/users', (request,response) => {
     return response.send({msg:"user created succesfully", newUser}).sendStatus(201);
 });
 
+// put request
+app.put('/api/users/:id' , (request,response) => {
+    const { body,params:{id} } = request;
+    const parsedID = parseInt(id);
+    if (isNaN(parsedID)) {
+        return response.status(400).send("Invalid ID");
+    }
+    const findUserIndex = mockUser.findIndex((user) => user.id === parsedID);
+    if (findUserIndex === -1) {
+        return response.status(404).send("User Not Found");
+    }
+    const updatedUser = {id:parsedID,...body};
+    mockUser[findUserIndex] = updatedUser;
+    return response.status(201).send("Updated Successfully");
+});
+
 
 
 app.listen(PORT , () => {
