@@ -91,6 +91,21 @@ app.patch('/api/users/:id' , (request,response) => {
     return response.status(201).send("Updated Successfully");
 });
 
+// delete request
+app.delete('/api/users/:id' , (request,response) => {
+    const { params:{id} } = request;
+    const parsedID = parseInt(id);
+    if (isNaN(parsedID)) {
+        return response.status(400).send("Invalid ID");
+    }
+    const findUserIndex = mockUser.findIndex((user) => user.id === parsedID);
+    if (findUserIndex === -1) {
+        return response.status(404).send("User Not Found");
+    }
+    mockUser.splice(findUserIndex,1);
+    return response.status(201).send("Deleted Successfully");
+});
+
 
 
 app.listen(PORT , () => {
