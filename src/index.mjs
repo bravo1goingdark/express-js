@@ -75,6 +75,21 @@ app.put('/api/users/:id' , (request,response) => {
     mockUser[findUserIndex] = updatedUser;
     return response.status(201).send("Updated Successfully");
 });
+app.patch('/api/users/:id' , (request,response) => {
+    const { body,params:{id} } = request;
+    const parsedID = parseInt(id);
+    if (isNaN(parsedID)) {
+        return response.status(400).send("Invalid ID");
+    }
+    const findUserIndex = mockUser.findIndex((user) => user.id === parsedID);
+    if (findUserIndex === -1) {
+        return response.status(404).send("User Not Found");
+    }
+    // If there are any duplicate keys between mockUser[findUserIndex] and body,
+    // the value from body will overwrite the value from mockUser[findUserIndex].
+    mockUser[findUserIndex] = { ...mockUser[findUserIndex], ...body};
+    return response.status(201).send("Updated Successfully");
+});
 
 
 
