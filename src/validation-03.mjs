@@ -105,7 +105,7 @@ app.post('/api/users',checkSchema(createPostUserValidationSchema)
     if(!result.isEmpty()){
         return response.status(400).send(result.array());
     }
-    // Extracts data validated or sanitized from the request, and builds an object with them.
+    // matchedData(request) -> Extracts data validated or sanitized from the request, and builds an object with them.
     const data = matchedData(request);
     const newUser = {id:mockUser[mockUser.length-1].id+1 , ...data};
     mockUser.push(newUser);
