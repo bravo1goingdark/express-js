@@ -1,5 +1,7 @@
 import express, { request, response } from 'express';
 import {mockUser} from '../utils/constants.mjs';
+import { body, checkSchema, matchedData, query, validationResult } from 'express-validator';
+import { createPostUserValidationSchema } from '../utils/validationSchema.mjs';
 const app = express();
 const PORT = 3000;
 
@@ -8,7 +10,6 @@ const logMethodsAndUrl = (request,response,next) => {
     console.log(`${request.method} - ${request.url}`);
     next();
 };
-// middleware for finding User Index and returning the index by attaching it to the request object
 const resolveIndexByUserID = (request,response,next) => {
     const {params:{id} } = request;
     const parsedID = parseInt(id);
@@ -25,15 +26,9 @@ const resolveIndexByUserID = (request,response,next) => {
 
 };
 app.use(express.json());
-// app.use(logMethodsAndUrl) --> mounting the logMethods middleware globally
 
-// the middleware can also be passed individually to each routes
 app.get('/' ,logMethodsAndUrl, (request , response) => {
     response.send("Hello World").status(201);
-});
-
-app.get('/api/users' , (request, response) => {
-    response.send(mockUser);
 });
 
 app.get('/api/products',logMethodsAndUrl, (request, response) => {
@@ -44,7 +39,6 @@ app.get('/api/products',logMethodsAndUrl, (request, response) => {
 
 // route params
 app.get('/api/users/:id',resolveIndexByUserID , (request, response) => {
-    // console.log(request.params); log all parameters passed to routes
     const {findUserIndex} = request;
     const findUser = mockUser[findUserIndex];
     if (!findUser) {
@@ -54,25 +48,68 @@ app.get('/api/users/:id',resolveIndexByUserID , (request, response) => {
 });
 
 // query params
-app.get('/api/user', (request, response) => {
-    console.log(request.query);
-    const {filter , substring} = request.query; // substring -> substring && filter by username
+// query() -> is used to validate query params
+app.get('/api/user',
+query("filter")
+    .notEmpty().withMessage("Must not be Empty") 
+    .isString().withMessage("Enter a valid value")
+    .isLength({ min:8,max:12}).withMessage("Must have at least 8 character and maximum 12 character")
+, (request, response) => {
+    //Extracts the validation errors of an express request
+    const result = validationResult(request);
+    console.log(result);
+    const {filter , substring} = request.query; 
     if (filter && substring) {
         const filterdUser = mockUser.filter(
             // convert mockuser username to lowercase and then compare the received substring from query params
-            (user) => user[filter].toLowerCase().includes(substring)
+            (user) => user[filter].toLowerCase().includes(substring.toLowerCase())
         );
         return response.send(filterdUser);
     }
     return response.send(mockUser);
 });
+
 // post request
-app.post('/api/users', (request,response) => {
-    console.log(request.body);
-    const {body} = request;
-    const newUser = {id:mockUser[mockUser.length-1].id+1 , ...body};
+// we can validate multiple value by passing another body() validator as middleware
+// or we can pass multiple values in a single array
+
+// app.post('/api/users',
+// [body("username") 
+//   .notEmpty().withMessage("Value must not be empty")
+//   .isString().withMessage("Must be a String")
+//   .isLength({min:5,max:32}).withMessage("must be at least 5-32 characters")
+//   ,
+// body("displayName")
+//  .notEmpty().withMessage("Value must not be empty")
+//  .isString().withMessage("Must be a String")
+// ] 
+// , (request,response) => {
+//     const result = validationResult(request);
+//     // if the error array in result is not empty i.e it means there are some errors
+//     if(!result.isEmpty()){
+//         return response.status(400).send(result.array());
+//     }
+//     // Extracts data validated or sanitized from the request, and builds an object with them.
+//     const data = matchedData(request);
+//     const newUser = {id:mockUser[mockUser.length-1].id+1 , ...data};
+//     mockUser.push(newUser);
+//     return response.status(201).send({msg:"user created succesfully", newUser});
+// });
+
+
+// another way to validate using checkSchema() function and passing the validation schema
+app.post('/api/users',checkSchema(createPostUserValidationSchema)
+, (request,response) => {
+    const result = validationResult(request);
+    // if the error array in result is not empty i.e it means there are some errors
+    if(!result.isEmpty()){
+        return response.status(400).send(result.array());
+    }
+    // Extracts data validated or sanitized from the request, and builds an object with them.
+    const data = matchedData(request);
+    const newUser = {id:mockUser[mockUser.length-1].id+1 , ...data};
     mockUser.push(newUser);
-    return response.sendStatus(201).send({msg:"user created succesfully", newUser});
+    return response.status(201).send({msg:"user created succesfully", newUser});
 });
 
 // put request
