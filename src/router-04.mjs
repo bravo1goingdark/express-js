@@ -6,6 +6,6 @@ app.use(express.json());
 app.use(userRouter);
 app.use(productRouter);
 
-app.listen(3000,() => {
-    console.log(`Listening on http://localhost:${3000}`);
+app.listen(3300,() => {
+    console.log(`Listening on http://localhost:${3300}`);
 })
