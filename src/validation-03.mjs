@@ -97,7 +97,7 @@ query("filter")
 // });
 
 
-// another way to validate using checkSchema() function and passing the validation schema
+// another way to validate is using checkSchema() function and passing the validation schema
 app.post('/api/users',checkSchema(createPostUserValidationSchema)
 , (request,response) => {
     const result = validationResult(request);

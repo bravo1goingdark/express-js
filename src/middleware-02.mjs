@@ -1,4 +1,4 @@
-import express, { request, response } from 'express';
+import express from 'express';
 import {mockUser} from '../utils/constants.mjs';
 const app = express();
 const PORT = 3000;
