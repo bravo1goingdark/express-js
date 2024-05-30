@@ -52,6 +52,10 @@ app.post('/api/auth' , (request,response) => {
 // checking user authentication status
 app.get('/api/auth/status' , (request,response) => {
     request.sessionStore.get(request.sessionID , (err , sessionData) => {
+        if (err) {
+            console.log(err);
+            throw err;
+        }
         console.log(sessionData);
     });
 
