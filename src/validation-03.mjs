@@ -42,7 +42,7 @@ app.get('/api/users/:id',resolveIndexByUserID , (request, response) => {
     const {findUserIndex} = request;
     const findUser = mockUser[findUserIndex];
     if (!findUser) {
-        return response.sendStatus(404).send("User Not Found");
+        return response.status(404).send("User Not Found");
     }
     return response.send(findUser);
 });
