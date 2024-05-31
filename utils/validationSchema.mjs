@@ -23,5 +23,9 @@ export const createPostUserValidationSchema = {
         notEmpty:{
             errorMessage:"Value must not be empty"
         }
+    },
+    // added after db-08.mjs
+    password:{
+        notEmpty:true
     }
 };
