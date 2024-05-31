@@ -11,7 +11,7 @@ app.use(session({
     saveUninitialized: false,
     resave:false,
     cookie: {
-        maxAge: 60000 * 60
+        maxAge: 60000 * 60 // 1hour
     }
 }));
 // app.use(routes);
@@ -43,7 +43,7 @@ app.post('/api/auth' , (request,response) => {
     const {body :{username , password}} = request;
     const findUser = mockUser.find((user) => user.username === username);
     if(!findUser || findUser.password !== password) {
-        return response.status(400).send("user not found")
+        return response.status(400).send("user not found");
     }
     request.session.user = findUser;
     return response.status(200).send(findUser);
@@ -51,6 +51,7 @@ app.post('/api/auth' , (request,response) => {
 
 // checking user authentication status
 app.get('/api/auth/status' , (request,response) => {
+    // sessionStore -> where all authenticated session are stored
     request.sessionStore.get(request.sessionID , (err , sessionData) => {
         if (err) {
             console.log(err);
