@@ -22,7 +22,7 @@ app.use(session({
     cookie: {
         maxAge: 60000 * 60
     }
-}))
+}));
 
 app.use(express.json());
 app.use(passport.initialize());
@@ -39,7 +39,7 @@ app.post('/api/users',checkSchema(createPostUserValidationSchema), async (reques
         const savedUser = await newUser.save();
     } catch (err) {
         console.log(err);
-        return response.status(400).send("not able to save user")
+        return response.status(400).send("not able to save user");
     }
     return response.status(201).send({msg:"user created succesfully", newUser});
 });
