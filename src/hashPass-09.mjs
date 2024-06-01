@@ -35,6 +35,7 @@ app.post('/api/users',checkSchema(createPostUserValidationSchema), async (reques
         return response.status(400).send(result.array());
     }
     const data = matchedData(request);
+    // modifying string password with hashed password 
     data.password = hashPassword(data.password);
     const newUser = new User(data);
     try {
