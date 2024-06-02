@@ -1,0 +1,14 @@
+//  this configuration ensures that Babel transpiles the JavaScript code using the @babel/preset-env
+// preset with Node.js current environment as the target. 
+// This is commonly used in Node.js projects to ensure compatibility across different Node.js versions.
+{
+    "presets": [
+        [
+            "@babel/preset-env",{
+                "targets":{
+                    "node": "current"
+                }
+            }
+        ]
+    ]
+}
